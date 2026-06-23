@@ -29,6 +29,20 @@
     padding:2.2rem 1.2rem 4rem;
   }
   .wrap{max-width:720px;margin:0 auto}
+  .hero{
+    position:relative;
+    border-radius:12px;
+    overflow:hidden;
+    background:#13241c;
+    padding:2.1rem 1.5rem 1.7rem;
+    margin-bottom:1.6rem;
+    border:1px solid #1f3a2c;
+  }
+  .hero svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+  .hero-content{position:relative;z-index:1}
+  .hero .eyebrow{color:#8fcaa6;margin-bottom:.55rem}
+  .hero h1{color:#f3f6f2;margin:0 0 .5rem}
+  .hero .sub{color:#bcd2c4;margin:0;max-width:54ch}
   .eyebrow{
     font-family:var(--mono);
     font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
@@ -107,10 +121,60 @@
 </head>
 <body>
 <div class="wrap">
-  <p class="eyebrow">BEAD &middot; Post Final Proposal &middot; Fixed Wireless and Wireline</p>
-  <h1>Do dropped BSLs need a scope change?</h1>
-  <p class="sub">Answer each step in order. The tool stops as soon as your path is determined. Scoped to fixed wireless and wireline projects. LEO drops follow separate rules.</p>
-  <hr>
+  <div class="hero">
+    <svg viewBox="0 0 720 200" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+      <defs>
+        <linearGradient id="fade" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0" stop-color="#2f6b4f" stop-opacity="0.9"/>
+          <stop offset="0.55" stop-color="#2f6b4f" stop-opacity="0.55"/>
+          <stop offset="1" stop-color="#2f6b4f" stop-opacity="0.06"/>
+        </linearGradient>
+        <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+          <stop offset="0" stop-color="#1a2f24"/>
+          <stop offset="1" stop-color="#13241c"/>
+        </radialGradient>
+      </defs>
+      <rect width="720" height="200" fill="url(#glow)"/>
+      <!-- connection lines -->
+      <g stroke="url(#fade)" stroke-width="1.4" fill="none">
+        <path d="M40 60 L150 40 L250 95 L360 70 L470 130"/>
+        <path d="M40 150 L150 120 L250 95 L360 150 L460 95"/>
+        <path d="M150 40 L150 120"/>
+        <path d="M250 95 L360 70 M360 70 L360 150"/>
+        <path d="M470 130 L560 60 L640 110"/>
+        <path d="M460 95 L560 60"/>
+      </g>
+      <!-- intact nodes (left, bright) -->
+      <g fill="#5fbf8c">
+        <circle cx="40" cy="60" r="5.5"/>
+        <circle cx="40" cy="150" r="5.5"/>
+        <circle cx="150" cy="40" r="6"/>
+        <circle cx="150" cy="120" r="6"/>
+        <circle cx="250" cy="95" r="6.5"/>
+        <circle cx="360" cy="70" r="5.5"/>
+        <circle cx="360" cy="150" r="5.5"/>
+      </g>
+      <!-- thinning nodes (right, dimmer) -->
+      <g fill="#3c8a63">
+        <circle cx="470" cy="130" r="4.5" opacity="0.8"/>
+        <circle cx="460" cy="95" r="4" opacity="0.7"/>
+        <circle cx="560" cy="60" r="4" opacity="0.55"/>
+        <circle cx="640" cy="110" r="3.5" opacity="0.4"/>
+      </g>
+      <!-- dropped nodes (faint outlines, leaving the project) -->
+      <g fill="none" stroke="#3c8a63" stroke-width="1.2" stroke-dasharray="2 3">
+        <circle cx="610" cy="40" r="4" opacity="0.4"/>
+        <circle cx="675" cy="70" r="4" opacity="0.3"/>
+        <circle cx="660" cy="160" r="4" opacity="0.3"/>
+        <circle cx="700" cy="130" r="3.5" opacity="0.22"/>
+      </g>
+    </svg>
+    <div class="hero-content">
+      <p class="eyebrow">BEAD &middot; Post Final Proposal &middot; Fixed Wireless and Wireline</p>
+      <h1>Do dropped BSLs need a scope change?</h1>
+      <p class="sub">Answer each step in order. The tool stops as soon as your path is determined. Scoped to fixed wireless and wireline projects. LEO drops follow separate rules.</p>
+    </div>
+  </div>
 
   <!-- STEP 1 -->
   <div class="step" id="step1">
@@ -162,7 +226,7 @@
         <div class="stat">Trigger (smaller of 20% / 200)<b id="trigger">&mdash;</b></div>
         <div class="stat">You are dropping<b id="dropval">&mdash;</b></div>
       </div>
-      <p class="src">Trigger is the smaller of 20% of BSLs or 200 BSLs from a single project, CAIs included. Source: Scope Change &amp; Budget Modification Guidance, p.4; FAQ V21, 9.7, p.65</p>
+      <p class="src">Trigger is the smaller of 20% of BSLs or 200 BSLs from a single project, CAIs included. Source: Scope Change &amp; Budget Modification Guidance, p.4; FAQ V22, 9.7, p.52</p>
     </div>
   </div>
 
@@ -174,13 +238,15 @@
   <p class="foot">
     <b>How this tool routes, with sources:</b>
     <ul>
-      <li>Reason Codes 1 to 3 are mandatory during the period of performance and carry direct authority, reported via the SAR. <span class="ref">Scope Change &amp; Budget Modification Guidance, p.4</span></li>
-      <li>Reason Codes 4 to 6 carry direct authority only if the drop stays at or below the smaller of 20% / 200, CAIs included; above that a New No BEAD Locations request is required. <span class="ref">Scope Change &amp; Budget Modification Guidance, p.4; FAQ V21, 9.7, p.65</span></li>
-      <li>Reason Code 7 requires NTIA approval before moving the BSLs to the No BEAD list, regardless of count. <span class="ref">Scope Change &amp; Budget Modification Guidance, p.4</span></li>
+      <li>Reason Codes 1 to 3 are mandatory during the period of performance and carry direct authority, reported via the SAR. <span class="ref">Scope Change &amp; Budget Modification Guidance, p.4; FAQ V22, 2.40, p.41</span></li>
+      <li>Reason Codes 4 to 6 carry direct authority only if the drop stays at or below the smaller of 20% / 200, CAIs included; above that a New No BEAD Locations request is required. <span class="ref">Scope Change &amp; Budget Modification Guidance, p.4; FAQ V22, 9.7, p.52</span></li>
+      <li>Reason Code 7 requires NTIA approval before moving the BSLs to the No BEAD list, regardless of count, and presupposes NTIA has already denied an extraordinary circumstances request. <span class="ref">FAQ V22, 9.7 n.8, p.52; Scope Change &amp; Budget Modification Guidance, p.4</span></li>
       <li>Any change in technology type, even partial, requires NTIA approval regardless of count. <span class="ref">Scope Change &amp; Budget Modification Primer, Table 1</span></li>
-      <li>The baseline rolls: each approved reduction becomes the new approved project area, so drops are not cumulative against the original Final Proposal. <span class="ref">FAQ V21, 9.7, p.65</span></li>
+      <li>The baseline rolls: each approved reduction becomes the new approved project area, so drops are not cumulative against the original Final Proposal. <span class="ref">FAQ V22, 9.7, p.52</span></li>
       <li>A scope change request runs through NGP and requires resubmission of all Final Proposal CSVs, budget documentation, and narrative responses; wait for the NOA amendment or administrative letter before implementing. <span class="ref">Scope Change &amp; Budget Modification Guidance, pp.6, 17; Primer, Change Request Submission Process</span></li>
     </ul>
+    <b>One open seam to confirm with your FPO:</b> FAQ V22, 2.40 (p.41) states Reason Code 6 may be used throughout the period of performance for locations that cannot or should not be built, while FAQ 9.7 still groups RC 6 with the threshold-gated RC 4 to 7 set. If a drop leans heavily on RC 6, confirm with your FPO whether those locations count toward the 20% / 200 calculation before relying on the self-service path.
+    <br><br>
     Always confirm with your FPO and the current Scope Change &amp; Budget Modification Guidance. This tool is a routing aid, not a substitute for the guidance. <span class="ref">Primer: "Eligible Entities must not rely on the information in this primer alone."</span>
   </p>
 </div>
@@ -196,19 +262,19 @@
     rc123:{cls:"self",tag:"Self-service &middot; SAR",h:"No scope change, report via SAR",
       body:"<p>Reason Codes 1 to 3 are mandatory during the period of performance and carry direct authority. Report the change in your next Semi-Annual (Technical) Report. No formal scope change request, regardless of how many locations.</p>",
       list:["Apply the correct code to each location.","Report in the next SAR; provide an updated CAI list if any CAIs were removed."],
-      cite:"Source: Scope Change &amp; Budget Modification Guidance, p.4; FAQ V21, 9.7, p.65"},
+      cite:"Source: Scope Change &amp; Budget Modification Guidance, p.4; FAQ V22, 9.7, p.52"},
     rc7:{cls:"ntia",tag:"Scope change required",h:"Reason Code 7, NTIA approval needed first",
       body:"<p>RC 7 always requires NTIA approval before moving BSLs to the No BEAD list, independent of the percentage. It also presupposes NTIA already denied an extraordinary circumstances request and that you hold cost evidence.</p>",
       list:["Confirm the extraordinary circumstances denial and assemble cost evidence.","Inform your FPO; file the New No BEAD Locations request in NGP.","Resubmit Final Proposal CSVs, budget docs, and the RC 7 narrative; await approval."],
-      cite:"Source: Scope Change &amp; Budget Modification Guidance, pp.4, 17"},
+      cite:"Source: FAQ V22, 9.7 n.8, p.52; Scope Change &amp; Budget Modification Guidance, pp.4, 17"},
     under:{cls:"self",tag:"Self-service &middot; SAR",h:"Under threshold, report via SAR",
       body:"<p>You are at or below the smaller of 20% / 200 for this project, CAIs included. You have direct authority, report through the SAR. The reduced area becomes your new approved baseline for any future drops.</p>",
       list:["Apply RC 4/5/6 with documentation supporting the code.","Report in the next SAR; provide an updated CAI list if CAIs were removed."],
-      cite:"Source: Scope Change &amp; Budget Modification Guidance, p.4; FAQ V21, 9.7, p.65"},
+      cite:"Source: Scope Change &amp; Budget Modification Guidance, p.4; FAQ V22, 9.7, p.52"},
     over:{cls:"ntia",tag:"Scope change required",h:"Over threshold, NTIA approval needed",
       body:"<p>The drop exceeds the smaller of 20% / 200 for this single project, CAIs included. File a New No BEAD Locations scope change request and wait for approval before implementing.</p>",
       list:["Inform your FPO; they open the Scope Change module in NGP.","Resubmit all Final Proposal CSVs and supporting budget documentation.","Narrative must justify the reason code applied (FCC map, funding map, or written justification as relevant).","Wait for the NOA amendment or administrative letter before executing the drop."],
-      cite:"Source: Scope Change &amp; Budget Modification Guidance, pp.4, 6, 17; FAQ V21, 9.7, p.65"}
+      cite:"Source: Scope Change &amp; Budget Modification Guidance, pp.4, 6, 17; FAQ V22, 9.7, p.52"}
   };
 
   function show(id){document.getElementById(id).classList.remove("hidden");}
