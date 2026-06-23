@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BSL Drop, Scope Change Decision Tree</title>
+<style>
+  :root{
+    --ink:#1a1d21;
+    --paper:#f6f4ef;
+    --line:#d6d1c4;
+    --muted:#6b6759;
+    --self:#2f6b4f;
+    --self-bg:#e7efe8;
+    --ntia:#9a3b2e;
+    --ntia-bg:#f2e3df;
+    --accent:#2f6b4f;
+    --sans:"Inter","Helvetica Neue",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:var(--sans);
+    line-height:1.5;
+    padding:2.2rem 1.2rem 4rem;
+  }
+  .wrap{max-width:720px;margin:0 auto}
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;
+    color:var(--muted);margin:0 0 .5rem;
+  }
+  h1{
+    font-size:1.6rem;line-height:1.18;font-weight:700;margin:0 0 .4rem;
+    letter-spacing:-.01em;
+  }
+  .sub{color:var(--muted);font-size:1rem;margin:0 0 1.6rem;max-width:58ch}
+  hr{border:0;border-top:1px solid var(--line);margin:1.8rem 0}
+
+  .step{margin:0 0 1.4rem}
+  .q{font-size:1.1rem;font-weight:600;margin:0 0 .9rem;display:flex;gap:.6rem;align-items:baseline}
+  .num{
+    font-family:var(--mono);
+    font-size:.78rem;color:var(--accent);font-weight:700;
+    border:1px solid var(--accent);border-radius:50%;
+    width:1.6rem;height:1.6rem;min-width:1.6rem;display:inline-flex;
+    align-items:center;justify-content:center;line-height:1;
+  }
+  .opts{display:flex;flex-direction:column;gap:.5rem}
+  button.opt{
+    font:inherit;text-align:left;cursor:pointer;
+    background:#fff;border:1px solid var(--line);border-radius:7px;
+    padding:.7rem .9rem;color:var(--ink);transition:border-color .12s,background .12s;
+    width:100%;
+  }
+  button.opt:hover{border-color:var(--accent)}
+  button.opt:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  button.opt.sel{border-color:var(--accent);background:var(--self-bg)}
+  button.opt small{display:block;color:var(--muted);font-size:.84rem;margin-top:.15rem;font-weight:400}
+  button.opt cite{display:block;color:var(--muted);font-size:.72rem;margin-top:.3rem;font-style:normal;font-family:var(--mono)}
+
+  .calc{background:#fff;border:1px solid var(--line);border-radius:7px;padding:1rem .9rem;margin-top:.4rem}
+  .calc label{display:block;font-size:.9rem;color:var(--muted);margin-bottom:.35rem}
+  .calc input{
+    font:inherit;font-size:1.05rem;width:100%;padding:.5rem .6rem;
+    border:1px solid var(--line);border-radius:6px;background:var(--paper);
+  }
+  .calc input:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+  .calc .src{font-size:.72rem;color:var(--muted);font-family:var(--mono);margin:.65rem 0 0}
+  .calcgrid{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-top:.8rem}
+  .stat{font-size:.86rem;color:var(--muted)}
+  .stat b{display:block;font-size:1.15rem;color:var(--ink);font-weight:700;font-family:var(--mono)}
+
+  .result{
+    border-radius:9px;padding:1.1rem 1.1rem 1.2rem;margin-top:.6rem;
+    border:1px solid;
+  }
+  .result.self{background:var(--self-bg);border-color:var(--self)}
+  .result.ntia{background:var(--ntia-bg);border-color:var(--ntia)}
+  .result .tag{
+    font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;
+    text-transform:uppercase;font-weight:700;
+  }
+  .result.self .tag{color:var(--self)}
+  .result.ntia .tag{color:var(--ntia)}
+  .result h3{margin:.35rem 0 .5rem;font-size:1.12rem;font-weight:700}
+  .result p{margin:.4rem 0;font-size:.95rem}
+  .result ul{margin:.5rem 0 0;padding-left:1.1rem;font-size:.9rem}
+  .result li{margin:.3rem 0}
+  .result cite{display:block;color:var(--muted);font-size:.72rem;margin-top:.7rem;font-style:normal;font-family:var(--mono)}
+
+  .reset{
+    font:inherit;font-size:.9rem;cursor:pointer;background:none;border:none;
+    color:var(--accent);text-decoration:underline;padding:0;margin-top:1.4rem;
+  }
+  .hidden{display:none}
+  .foot{margin-top:2.4rem;font-size:.8rem;color:var(--muted);line-height:1.6}
+  .foot b{color:var(--ink);font-weight:600}
+  .foot .ref{font-family:var(--mono);font-size:.72rem}
+  .foot ul{padding-left:1.1rem;margin:.5rem 0 0}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="eyebrow">BEAD &middot; Post Final Proposal &middot; Fixed Wireless and Wireline</p>
+  <h1>Do dropped BSLs need a scope change?</h1>
+  <p class="sub">Answer each step in order. The tool stops as soon as your path is determined. Scoped to fixed wireless and wireline projects. LEO drops follow separate rules.</p>
+  <hr>
+
+  <!-- STEP 1 -->
+  <div class="step" id="step1">
+    <div class="q"><span class="num">1</span><span>Why are the BSLs leaving the project?</span></div>
+    <div class="opts">
+      <button class="opt" data-step="1" data-val="drop">
+        Removed from the project entirely
+        <small>No longer BEAD eligible, served elsewhere, gone from the Fabric, or too costly to serve.</small>
+      </button>
+      <button class="opt" data-step="1" data-val="tech">
+        Staying in the project, served by a different technology
+        <small>Ex. a fiber cluster reassigned to fixed wireless.</small>
+        <cite>Source: Scope Change &amp; Budget Modification Primer, Table 1 (Technology Changes)</cite>
+      </button>
+    </div>
+  </div>
+
+  <!-- STEP 2 -->
+  <div class="step hidden" id="step2">
+    <div class="q"><span class="num">2</span><span>Which Reason Code applies to the dropped locations?</span></div>
+    <div class="opts">
+      <button class="opt" data-step="2" data-val="rc123">
+        Reason Code 1, 2, or 3 only
+        <small>No broadband connection &middot; No mass market demand &middot; Removed from FCC Fabric.</small>
+        <cite>Source: Scope Change &amp; Budget Modification Guidance, p.4</cite>
+      </button>
+      <button class="opt" data-step="2" data-val="rc456">
+        Reason Code 4, 5, or 6
+        <small>Enforceable commitment &middot; Served by non-subsidized service &middot; Other.</small>
+        <cite>Source: Scope Change &amp; Budget Modification Guidance, pp.4, 17</cite>
+      </button>
+      <button class="opt" data-step="2" data-val="rc7">
+        Reason Code 7 is involved
+        <small>Financially incapable / excessive cost.</small>
+        <cite>Source: Scope Change &amp; Budget Modification Guidance, p.4</cite>
+      </button>
+    </div>
+  </div>
+
+  <!-- STEP 3 -->
+  <div class="step hidden" id="step3">
+    <div class="q"><span class="num">3</span><span>Run the threshold for this single project</span></div>
+    <div class="calc">
+      <label for="approved">Current approved BSLs in this project, include CAIs</label>
+      <input id="approved" type="number" inputmode="numeric" min="1" placeholder="ex. 800">
+      <label for="dropping" style="margin-top:.8rem">BSLs you intend to drop under RC 4/5/6, include any CAIs removed</label>
+      <input id="dropping" type="number" inputmode="numeric" min="0" placeholder="ex. 150">
+      <div class="calcgrid">
+        <div class="stat">Trigger (smaller of 20% / 200)<b id="trigger">&mdash;</b></div>
+        <div class="stat">You are dropping<b id="dropval">&mdash;</b></div>
+      </div>
+      <p class="src">Trigger is the smaller of 20% of BSLs or 200 BSLs from a single project, CAIs included. Source: Scope Change &amp; Budget Modification Guidance, p.4; FAQ V21, 9.7, p.65</p>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div id="result"></div>
+
+  <button class="reset hidden" id="reset">Start over</button>
+
+  <p class="foot">
+    <b>How this tool routes, with sources:</b>
+    <ul>
+      <li>Reason Codes 1 to 3 are mandatory during the period of performance and carry direct authority, reported via the SAR. <span class="ref">Scope Change &amp; Budget Modification Guidance, p.4</span></li>
+      <li>Reason Codes 4 to 6 carry direct authority only if the drop stays at or below the smaller of 20% / 200, CAIs included; above that a New No BEAD Locations request is required. <span class="ref">Scope Change &amp; Budget Modification Guidance, p.4; FAQ V21, 9.7, p.65</span></li>
+      <li>Reason Code 7 requires NTIA approval before moving the BSLs to the No BEAD list, regardless of count. <span class="ref">Scope Change &amp; Budget Modification Guidance, p.4</span></li>
+      <li>Any change in technology type, even partial, requires NTIA approval regardless of count. <span class="ref">Scope Change &amp; Budget Modification Primer, Table 1</span></li>
+      <li>The baseline rolls: each approved reduction becomes the new approved project area, so drops are not cumulative against the original Final Proposal. <span class="ref">FAQ V21, 9.7, p.65</span></li>
+      <li>A scope change request runs through NGP and requires resubmission of all Final Proposal CSVs, budget documentation, and narrative responses; wait for the NOA amendment or administrative letter before implementing. <span class="ref">Scope Change &amp; Budget Modification Guidance, pp.6, 17; Primer, Change Request Submission Process</span></li>
+    </ul>
+    Always confirm with your FPO and the current Scope Change &amp; Budget Modification Guidance. This tool is a routing aid, not a substitute for the guidance. <span class="ref">Primer: "Eligible Entities must not rely on the information in this primer alone."</span>
+  </p>
+</div>
+
+<script>
+(function(){
+  var state={step1:null,step2:null};
+  var R={
+    tech:{cls:"ntia",tag:"Scope change required",h:"Technology change, NTIA approval needed",
+      body:"<p>This is a Technology Change, not a location drop. Any change in technology type, even partial, even a single location, requires NTIA approval. The BSL count and percentage do not matter here.</p>",
+      list:["Inform your FPO; they designate the change type in NGP.","Resubmit all Final Proposal CSVs, budget docs, and a narrative justifying the new technology.","Wait for the NOA amendment or administrative letter before implementing."],
+      cite:"Source: Scope Change &amp; Budget Modification Primer, Table 1; Guidance, Change Request Submission Process"},
+    rc123:{cls:"self",tag:"Self-service &middot; SAR",h:"No scope change, report via SAR",
+      body:"<p>Reason Codes 1 to 3 are mandatory during the period of performance and carry direct authority. Report the change in your next Semi-Annual (Technical) Report. No formal scope change request, regardless of how many locations.</p>",
+      list:["Apply the correct code to each location.","Report in the next SAR; provide an updated CAI list if any CAIs were removed."],
+      cite:"Source: Scope Change &amp; Budget Modification Guidance, p.4; FAQ V21, 9.7, p.65"},
+    rc7:{cls:"ntia",tag:"Scope change required",h:"Reason Code 7, NTIA approval needed first",
+      body:"<p>RC 7 always requires NTIA approval before moving BSLs to the No BEAD list, independent of the percentage. It also presupposes NTIA already denied an extraordinary circumstances request and that you hold cost evidence.</p>",
+      list:["Confirm the extraordinary circumstances denial and assemble cost evidence.","Inform your FPO; file the New No BEAD Locations request in NGP.","Resubmit Final Proposal CSVs, budget docs, and the RC 7 narrative; await approval."],
+      cite:"Source: Scope Change &amp; Budget Modification Guidance, pp.4, 17"},
+    under:{cls:"self",tag:"Self-service &middot; SAR",h:"Under threshold, report via SAR",
+      body:"<p>You are at or below the smaller of 20% / 200 for this project, CAIs included. You have direct authority, report through the SAR. The reduced area becomes your new approved baseline for any future drops.</p>",
+      list:["Apply RC 4/5/6 with documentation supporting the code.","Report in the next SAR; provide an updated CAI list if CAIs were removed."],
+      cite:"Source: Scope Change &amp; Budget Modification Guidance, p.4; FAQ V21, 9.7, p.65"},
+    over:{cls:"ntia",tag:"Scope change required",h:"Over threshold, NTIA approval needed",
+      body:"<p>The drop exceeds the smaller of 20% / 200 for this single project, CAIs included. File a New No BEAD Locations scope change request and wait for approval before implementing.</p>",
+      list:["Inform your FPO; they open the Scope Change module in NGP.","Resubmit all Final Proposal CSVs and supporting budget documentation.","Narrative must justify the reason code applied (FCC map, funding map, or written justification as relevant).","Wait for the NOA amendment or administrative letter before executing the drop."],
+      cite:"Source: Scope Change &amp; Budget Modification Guidance, pp.4, 6, 17; FAQ V21, 9.7, p.65"}
+  };
+
+  function show(id){document.getElementById(id).classList.remove("hidden");}
+  function hide(id){document.getElementById(id).classList.add("hidden");}
+  function clearResult(){document.getElementById("result").innerHTML="";}
+
+  function render(key){
+    var r=R[key];if(!r)return;
+    document.getElementById("result").innerHTML=
+      '<div class="result '+r.cls+'"><div class="tag">'+r.tag+'</div>'+
+      '<h3>'+r.h+'</h3>'+r.body+'<ul>'+r.list.map(function(x){return"<li>"+x+"</li>"}).join("")+'</ul>'+
+      '<cite>'+r.cite+'</cite></div>';
+    show("reset");
+  }
+
+  function evalThreshold(){
+    var a=parseFloat(document.getElementById("approved").value);
+    var d=parseFloat(document.getElementById("dropping").value);
+    var tEl=document.getElementById("trigger"),dEl=document.getElementById("dropval");
+    if(!a||a<1){tEl.innerHTML="&mdash;";dEl.innerHTML="&mdash;";clearResult();hide("reset");return;}
+    var trig=Math.min(a*0.2,200);
+    tEl.textContent=(trig===200?"200":Math.floor(a*0.2)+" (20%)");
+    if(isNaN(d)){dEl.innerHTML="&mdash;";clearResult();hide("reset");return;}
+    dEl.textContent=d;
+    render(d>trig?"over":"under");
+  }
+
+  document.querySelectorAll("button.opt").forEach(function(b){
+    b.addEventListener("click",function(){
+      var step=b.dataset.step,val=b.dataset.val;
+      var sibs=b.parentNode.querySelectorAll("button.opt");
+      sibs.forEach(function(s){s.classList.remove("sel")});
+      b.classList.add("sel");
+      clearResult();hide("reset");
+      if(step==="1"){
+        state.step1=val;state.step2=null;
+        hide("step2");hide("step3");
+        if(val==="tech"){render("tech");}
+        else{show("step2");}
+      }
+      if(step==="2"){
+        state.step2=val;
+        hide("step3");
+        if(val==="rc123"){render("rc123");}
+        else if(val==="rc7"){render("rc7");}
+        else{show("step3");document.getElementById("approved").focus();}
+      }
+    });
+  });
+
+  document.getElementById("approved").addEventListener("input",evalThreshold);
+  document.getElementById("dropping").addEventListener("input",evalThreshold);
+
+  document.getElementById("reset").addEventListener("click",function(){
+    state={step1:null,step2:null};
+    document.querySelectorAll("button.opt").forEach(function(s){s.classList.remove("sel")});
+    document.getElementById("approved").value="";
+    document.getElementById("dropping").value="";
+    document.getElementById("trigger").innerHTML="&mdash;";
+    document.getElementById("dropval").innerHTML="&mdash;";
+    hide("step2");hide("step3");clearResult();hide("reset");
+    window.scrollTo({top:0,behavior:"smooth"});
+  });
+})();
+</script>
+</body>
+</html>
